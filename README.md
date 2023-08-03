@@ -16,3 +16,10 @@ TODO
 
 outlier - uses online outlier algorithm (keeping track of mean+sum difference from mean) for efficiency 
 and this can be adapted for streaming approach if needed (using windowing approach)
+
+
+remaining
+- input handling + file handling
+- output file
+- e2e test
+- diagrams 

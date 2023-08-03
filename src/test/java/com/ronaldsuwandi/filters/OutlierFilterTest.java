@@ -38,6 +38,7 @@ class OutlierFilterTest {
         double targetZScore = 2.0;
         return Stream.of(
                 arguments(targetZScore, FilterResult.Success, 1.0, 1.0, 1.5, 1.2, 2.0, 0.8),
+                arguments(targetZScore, FilterResult.Success, 1.0, 1.0, 1.5, 1.2, Double.NaN, Double.NaN), // NaN case
                 arguments(targetZScore, FilterResult.BidFails, 100000.0, 1.0, 1.5, 1.2, 2.0, 0.8),
                 arguments(targetZScore, FilterResult.AskFails, 1.0, 100000.0, 1.5, 1.2, 2.0, 0.8),
                 arguments(targetZScore, FilterResult.BidAskFails, 100000.0, 100000.0, 1.5, 1.2, 2.0, 0.8),
@@ -46,6 +47,6 @@ class OutlierFilterTest {
                 arguments(targetZScore, FilterResult.Success, null, null, 1.5, 1.2, 2.0, 0.8),
                 arguments(targetZScore, FilterResult.BidFails, 100000.0, null, 1.5, 1.2, 2.0, 0.8),
                 arguments(targetZScore, FilterResult.AskFails, null, 100000.0, 1.5, 1.2, 2.0, 0.8)
-        );
+                );
     }
 }

@@ -1,5 +1,7 @@
 package com.ronaldsuwandi;
 
+import java.util.Objects;
+
 public class Quote implements Comparable<Quote>{
     private final String symbol;
     private final String source;
@@ -38,5 +40,18 @@ public class Quote implements Comparable<Quote>{
     @Override
     public int compareTo(Quote o) {
         return Double.compare(this.quote, o.quote);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Quote quote1 = (Quote) o;
+        return Double.compare(quote1.quote, quote) == 0 && timestamp == quote1.timestamp && Objects.equals(symbol, quote1.symbol) && Objects.equals(source, quote1.source) && type == quote1.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(symbol, source, quote, type, timestamp);
     }
 }

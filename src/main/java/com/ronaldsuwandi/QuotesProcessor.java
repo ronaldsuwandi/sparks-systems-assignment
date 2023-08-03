@@ -3,31 +3,26 @@ package com.ronaldsuwandi;
 import com.ronaldsuwandi.filters.FilterResult;
 import com.ronaldsuwandi.filters.QuoteFilter;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 
 public class QuotesProcessor {
-    private final SymbolQuotes symbolQuotes;
-
     private final String output; // TODO
 
-    public QuotesProcessor(SymbolQuotes symbolQuotes, String output) {
-        this.symbolQuotes = symbolQuotes;
+    public QuotesProcessor(String output) {
         this.output = output;
-    }
-
-    public void addFilter() {
-        // TODO
     }
 
     private QuoteFilter filter;
 
-    public void process() {
-//        Set<String> symbols = symbolQuotes.getSymbols();
-        Set<String> symbols = new HashSet<>();
-        for (String symbol : symbols) {
-            var bidIterator = symbolQuotes.iterator(symbol, QuoteType.BID);
-            var askIterator = symbolQuotes.iterator(symbol, QuoteType.ASK);
+    public void setFilter(QuoteFilter filter) {
+        this.filter = filter;
+    }
+
+    public void process(Map<String, SymbolQuotes> symbolQuotesMap) {
+
+        for (SymbolQuotes symbolQuotes : symbolQuotesMap.values()) {
+            var bidIterator = symbolQuotes.iterator(QuoteType.BID);
+            var askIterator = symbolQuotes.iterator(QuoteType.ASK);
 
             Quote bid = null;
             Quote ask = null;
@@ -40,12 +35,15 @@ public class QuotesProcessor {
                     ask = askIterator.next();
                 }
 
-
                 var result = filter.filter(bid, ask);
 
                 switch (result) {
-                    case AskFails: ask = null; break;
-                    case BidFails: bid = null; break;
+                    case AskFails:
+                        ask = null;
+                        break;
+                    case BidFails:
+                        bid = null;
+                        break;
 
                     case BidAskFails:
                     case Success: {
@@ -60,10 +58,9 @@ public class QuotesProcessor {
                 }
             }
         }
+
+
     }
-
-
-
 }
 
         /*

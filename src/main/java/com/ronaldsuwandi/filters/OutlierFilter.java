@@ -37,12 +37,12 @@ public class OutlierFilter implements QuoteFilter {
         boolean askFails = false;
         if (bid != null) {
             double zscore = (bid.getQuote() - quotes.getQuoteAverage(bid.getType())) / quotes.getQuoteStdDev(bid.getType());
-            bidFails = zscore > targetZScore;
+            if (!Double.isNaN(zscore)) bidFails = zscore > targetZScore;
         }
 
         if (ask != null) {
             double zscore = (ask.getQuote() - quotes.getQuoteAverage(ask.getType())) / quotes.getQuoteStdDev(ask.getType());
-            askFails = zscore > targetZScore;
+            if (!Double.isNaN(zscore)) askFails = zscore > targetZScore;
         }
 
         return FilterResultHelper.getFilterResult(bidFails, askFails);

@@ -42,7 +42,7 @@ public class SymbolQuotes {
         }
     }
 
-    public Iterator<Quote> iterator(String symbol, QuoteType quoteType) {
+    public Iterator<Quote> iterator(QuoteType quoteType) {
         if (quoteType == QuoteType.BID) {
             return bids.iterator();
         } else {
@@ -60,8 +60,8 @@ public class SymbolQuotes {
 
     public double getQuoteStdDev(QuoteType quoteType) {
         // reference for online variance: https://math.stackexchange.com/a/1769248
-        double sum = 0;
-        double count = 0;
+        double sum;
+        double count;
         if (quoteType == QuoteType.BID) {
             sum = bidSumDifferenceFromMean;
             count = bids.size();
