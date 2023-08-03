@@ -15,15 +15,6 @@ public class SymbolQuotes {
     private double bidSumDifferenceFromMean;
     private double askSumDifferenceFromMean;
 
-    private double bidStdDev;
-    private double askStdDev;
-
-    private double bidLastSum = 0; // used to maintain the latest sum to avoid iterating through the loop
-    private double askLastSum = 0; // used to maintain the latest sum to avoid iterating through the loop
-    private double bidLastSquareSum = 0; // used to maintain the squared sum to avoid iterating through the loop for variance/std deviation
-    private double askLastSquareSum = 0; // used to maintain the squared sum to avoid iterating through the loop for variance/std deviation
-
-
     public SymbolQuotes(String symbol) {
         this.symbol = symbol;
     }
@@ -31,11 +22,13 @@ public class SymbolQuotes {
     // adds the quote into the list of quotes, it also update the last sum and last squared sum (used for z-score)
     public void addQuote(Quote quote) {
         if (quote == null) {
-            return; // FIXME
+            return;
+        }
+        if (!quote.getSymbol().equals(symbol)) {
+            throw new RuntimeException("Symbol '" + quote.getSymbol() + "' does not match with SymbolQuotes ('" + symbol + "')");
         }
 
-        double delta = 0;
-
+        double delta;
         if (quote.getType() == QuoteType.BID) {
             bids.add(quote);
             delta = quote.getQuote() - bidAverage;
@@ -80,4 +73,7 @@ public class SymbolQuotes {
         return Math.sqrt(variance);
     }
 
+    public String getSymbol() {
+        return symbol;
+    }
 }

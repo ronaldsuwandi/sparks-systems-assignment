@@ -45,16 +45,6 @@ public class OutlierFilter implements QuoteFilter {
             askFails = zscore > targetZScore;
         }
 
-        if (bidFails || askFails) {
-            if (bidFails && askFails) {
-                return FilterResult.BidAskFails;
-            } else if (bidFails) {
-                return FilterResult.BidFails;
-            } else {
-                return FilterResult.AskFails;
-            }
-        }
-
-        return FilterResult.Success;
+        return FilterResultHelper.getFilterResult(bidFails, askFails);
     }
 }
