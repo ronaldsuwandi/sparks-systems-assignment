@@ -1,44 +1,83 @@
 package com.ronaldsuwandi;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.NavigableSet;
+import java.util.TreeSet;
 
 public class SymbolQuotes {
-    private final Map<String, NavigableSet<Quote>> bidsBySymbol;
-    private final Map<String, NavigableSet<Quote>> asksBySymbol;
+    private final String symbol;
+    private final NavigableSet<Quote> bids = new TreeSet<>();
+    private final NavigableSet<Quote> asks = new TreeSet<>();
+
+    private double bidAverage;
+    private double askAverage;
+
+    private double bidSumDifferenceFromMean;
+    private double askSumDifferenceFromMean;
+
+    private double bidStdDev;
+    private double askStdDev;
+
+    private double bidLastSum = 0; // used to maintain the latest sum to avoid iterating through the loop
+    private double askLastSum = 0; // used to maintain the latest sum to avoid iterating through the loop
+    private double bidLastSquareSum = 0; // used to maintain the squared sum to avoid iterating through the loop for variance/std deviation
+    private double askLastSquareSum = 0; // used to maintain the squared sum to avoid iterating through the loop for variance/std deviation
 
 
-    public SymbolQuotes() {
-        bidsBySymbol = new HashMap<>();
-        asksBySymbol = new HashMap<>();
+    public SymbolQuotes(String symbol) {
+        this.symbol = symbol;
     }
 
+    // adds the quote into the list of quotes, it also update the last sum and last squared sum (used for z-score)
     public void addQuote(Quote quote) {
         if (quote == null) {
             return; // FIXME
         }
 
-        final NavigableSet<Quote> set;
+        double delta = 0;
+
         if (quote.getType() == QuoteType.BID) {
-            set = bidsBySymbol.putIfAbsent(quote.getSymbol(), new TreeSet<>());
+            bids.add(quote);
+            delta = quote.getQuote() - bidAverage;
+            bidAverage += delta / (double) bids.size();
+            bidSumDifferenceFromMean += delta * (quote.getQuote() - bidAverage);
         } else {
-            set = asksBySymbol.putIfAbsent(quote.getSymbol(), new TreeSet<>());
+            asks.add(quote);
+            delta = quote.getQuote() - askAverage;
+            askAverage += delta / (double) asks.size();
+            askSumDifferenceFromMean += delta * (quote.getQuote() - askAverage);
         }
-        set.add(quote);
     }
 
-    public Set<String> getSymbols() {
-        Set<String> symbols = bidsBySymbol.keySet();
-        symbols.addAll(asksBySymbol.keySet());
-        return symbols;
+    public Iterator<Quote> iterator(String symbol, QuoteType quoteType) {
+        if (quoteType == QuoteType.BID) {
+            return bids.iterator();
+        } else {
+            return asks.iterator();
+        }
     }
 
-    public Iterator<Quote> iterator(String symbol, QuoteType type) {
-        switch(type) {
-            case ASK:
-                return asksBySymbol.get(symbol).iterator();
-            case BID:
-                return bidsBySymbol.get(symbol).iterator();
+    public double getQuoteAverage(QuoteType quoteType) {
+        if (quoteType == QuoteType.BID) {
+            return bidAverage;
+        } else {
+            return askAverage;
         }
-        return null;
     }
+
+    public double getQuoteStdDev(QuoteType quoteType) {
+        // reference for online variance: https://math.stackexchange.com/a/1769248
+        double sum = 0;
+        double count = 0;
+        if (quoteType == QuoteType.BID) {
+            sum = bidSumDifferenceFromMean;
+            count = bids.size();
+        } else {
+            sum = askSumDifferenceFromMean;
+            count = asks.size();
+        }
+        double variance = sum / (count - 1);
+        return Math.sqrt(variance);
+    }
+
 }

@@ -3,6 +3,7 @@ package com.ronaldsuwandi;
 import com.ronaldsuwandi.filters.FilterResult;
 import com.ronaldsuwandi.filters.QuoteFilter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class QuotesProcessor {
@@ -22,7 +23,8 @@ public class QuotesProcessor {
     private QuoteFilter filter;
 
     public void process() {
-        Set<String> symbols = symbolQuotes.getSymbols();
+//        Set<String> symbols = symbolQuotes.getSymbols();
+        Set<String> symbols = new HashSet<>();
         for (String symbol : symbols) {
             var bidIterator = symbolQuotes.iterator(symbol, QuoteType.BID);
             var askIterator = symbolQuotes.iterator(symbol, QuoteType.ASK);

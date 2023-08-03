@@ -11,7 +11,7 @@ public class Main {
         Map<String, SymbolQuotes> quotesBySymbol = new HashMap<>();
 
 
-        SymbolQuotes symbolQuotes = new SymbolQuotes();
+//        SymbolQuotes symbolQuotes = new SymbolQuotes();
 
 //        QuotesProcessor qp = new QuotesProcessor(symbolQuotes);
 
