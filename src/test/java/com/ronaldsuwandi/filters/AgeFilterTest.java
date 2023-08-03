@@ -19,9 +19,8 @@ class AgeFilterTest {
     public void testFilter(long durationInMs, FilterResult expected, Instant bidTimestamp, Instant askTimestamp) {
         AgeFilter filter = new AgeFilter(durationInMs);
 
-        Quote bid = null, ask = null;
-        if (bidTimestamp != null) bid = new Quote("EURUSD", "reuters", 1.5, QuoteType.BID, bidTimestamp.toEpochMilli());
-        if (askTimestamp != null) ask = new Quote("EURUSD", "reuters", 1.5, QuoteType.ASK, askTimestamp.toEpochMilli());
+        Quote bid = bidTimestamp != null ? new Quote("EURUSD", "reuters", 1.5, QuoteType.BID, bidTimestamp.toEpochMilli()) : null;
+        Quote ask = askTimestamp != null ? new Quote("EURUSD", "reuters", 1.5, QuoteType.ASK, askTimestamp.toEpochMilli()) : null;
 
         assertEquals(expected, filter.filter(bid, ask));
     }

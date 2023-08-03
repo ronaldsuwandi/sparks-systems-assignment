@@ -14,68 +14,25 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 public class SymbolFilterTest {
     @ParameterizedTest
     @MethodSource("filterArguments")
-    public void testFilter(String symbol, FilterResult expected, Quote bid, Quote ask) {
+    public void testFilter(String symbol, FilterResult expected, String bidSymbol, String askSymbol) {
         SymbolFilter filter = new SymbolFilter(symbol);
+        Quote bid = bidSymbol != null ? new Quote(bidSymbol, "reuters", 1.5, QuoteType.BID, 0) : null;
+        Quote ask = askSymbol != null ? new Quote(askSymbol, "reuters", 1.5, QuoteType.ASK, 0) : null;
         assertEquals(expected, filter.filter(bid, ask));
     }
 
     static Stream<Arguments> filterArguments() {
         String symbol = "EURUSD";
         return Stream.of(
-                arguments(
-                        symbol,
-                        FilterResult.Success,
-                        new Quote(symbol, "reuters", 1.5, QuoteType.BID, 0),
-                        new Quote(symbol, "reuters", 1.5, QuoteType.ASK, 0)
-                ),
-                arguments(
-                        symbol,
-                        FilterResult.AskFails,
-                        new Quote(symbol, "reuters", 1.5, QuoteType.BID, 0),
-                        new Quote("AUDUSD", "reuters", 1.5, QuoteType.ASK, 0)
-                ),
-                arguments(
-                        symbol,
-                        FilterResult.BidFails,
-                        new Quote("SGDUSD", "reuters", 1.5, QuoteType.BID, 0),
-                        new Quote(symbol, "reuters", 1.5, QuoteType.ASK, 0)
-                ),
-                arguments(
-                        symbol,
-                        FilterResult.BidAskFails,
-                        new Quote("SGDUSD", "reuters", 1.5, QuoteType.BID, 0),
-                        new Quote("AUDGBP", "reuters", 1.5, QuoteType.ASK, 0)
-                ),
-                arguments(
-                        symbol,
-                        FilterResult.Success,
-                        new Quote(symbol, "reuters", 1.5, QuoteType.BID, 0),
-                        null
-                ),
-                arguments(
-                        symbol,
-                        FilterResult.Success,
-                        null,
-                        new Quote(symbol, "reuters", 1.5, QuoteType.BID, 0)
-                ),
-                arguments(
-                        symbol,
-                        FilterResult.Success,
-                        null,
-                        null
-                ),
-                arguments(
-                        symbol,
-                        FilterResult.BidFails,
-                        new Quote("SGDUSD", "reuters", 1.5, QuoteType.BID, 0),
-                        null
-                ),
-                arguments(
-                        symbol,
-                        FilterResult.AskFails,
-                        null,
-                        new Quote("SGDUSD", "reuters", 1.5, QuoteType.BID, 0)
-                )
+                arguments(symbol, FilterResult.Success, symbol, symbol),
+                arguments(symbol, FilterResult.AskFails, symbol, "AUDUSD"),
+                arguments(symbol, FilterResult.BidFails, "SGDUSD", symbol),
+                arguments(symbol, FilterResult.BidAskFails, "SGDUSD", "AUDGBP"),
+                arguments(symbol, FilterResult.Success, symbol, null),
+                arguments(symbol, FilterResult.Success, null, symbol),
+                arguments(symbol, FilterResult.Success, null, null),
+                arguments(symbol, FilterResult.BidFails, "SGDUSD", null),
+                arguments(symbol, FilterResult.AskFails, null, "SGDUSD")
         );
     }
 }

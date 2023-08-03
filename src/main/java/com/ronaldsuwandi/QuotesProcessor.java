@@ -41,23 +41,21 @@ public class QuotesProcessor {
 
                 var result = filter.filter(bid, ask);
 
-                if (result != FilterResult.Success) {
-                    switch(result) {
-                        case AskFails: ask = null; break;
-                        case BidFails: bid = null; break;
-                        case BidAskFails: {
-                            bid = null;
-                            ask = null;
-                            break;
-                        }
+                switch (result) {
+                    case AskFails: ask = null; break;
+                    case BidFails: bid = null; break;
+
+                    case BidAskFails:
+                    case Success: {
+                        bid = null;
+                        ask = null;
+                        break;
                     }
-                    continue;
                 }
 
-                // success for both
-                bid = null;
-                ask = null;
-                // do output
+                if (result == FilterResult.Success) {
+                    // do output
+                }
             }
         }
     }
