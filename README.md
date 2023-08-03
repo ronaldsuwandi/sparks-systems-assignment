@@ -20,6 +20,5 @@ and this can be adapted for streaming approach if needed (using windowing approa
 
 remaining
 - input handling + file handling
-- output file
 - e2e test
 - diagrams 
