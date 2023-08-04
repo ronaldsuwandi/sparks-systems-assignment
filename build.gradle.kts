@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     implementation("org.apache.commons:commons-csv:1.10.0")
+    testImplementation("commons-io:commons-io:2.13.0")
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.mockito:mockito-core:5.4.0")

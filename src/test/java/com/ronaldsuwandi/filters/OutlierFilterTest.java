@@ -18,35 +18,24 @@ import static org.mockito.Mockito.when;
 class OutlierFilterTest {
     @ParameterizedTest
     @MethodSource("filterArguments")
-    public void testFilter(double targetZScore, FilterResult expected,
-                           Double bidQuote, Double askQuote,
-                           double bidAverage, double askAverage,
-                           double bidStdDev, double askStdDev) {
+    public void testFilter(double targetZScore, boolean expected,
+                           Double bidQuote, double bidAverage, double bidStdDev) {
         var quotes = mock(SymbolQuotes.class);
         when(quotes.getQuoteAverage(QuoteType.BID)).thenReturn(bidAverage);
-        when(quotes.getQuoteAverage(QuoteType.ASK)).thenReturn(askAverage);
         when(quotes.getQuoteStdDev(QuoteType.BID)).thenReturn(bidStdDev);
-        when(quotes.getQuoteStdDev(QuoteType.ASK)).thenReturn(askStdDev);
 
         var filter = new OutlierFilter(Map.of("EURUSD", quotes), targetZScore);
         var bid = bidQuote != null ? new Quote("EURUSD", "reuters", bidQuote, QuoteType.BID, 0) : null;
-        var ask = askQuote != null ? new Quote("EURUSD", "reuters", askQuote, QuoteType.ASK, 0) : null;
-        assertEquals(expected, filter.filter(bid, ask));
+        assertEquals(expected, filter.filter(bid));
     }
 
     static Stream<Arguments> filterArguments() {
         var targetZScore = 2.0;
         return Stream.of(
-                arguments(targetZScore, FilterResult.Success, 1.0, 1.0, 1.5, 1.2, 2.0, 0.8),
-                arguments(targetZScore, FilterResult.Success, 1.0, 1.0, 1.5, 1.2, Double.NaN, Double.NaN), // NaN case
-                arguments(targetZScore, FilterResult.BidFails, 100000.0, 1.0, 1.5, 1.2, 2.0, 0.8),
-                arguments(targetZScore, FilterResult.AskFails, 1.0, 100000.0, 1.5, 1.2, 2.0, 0.8),
-                arguments(targetZScore, FilterResult.BidAskFails, 100000.0, 100000.0, 1.5, 1.2, 2.0, 0.8),
-                arguments(targetZScore, FilterResult.Success, 1.0, null, 1.5, 1.2, 2.0, 0.8),
-                arguments(targetZScore, FilterResult.Success, null, 1.0, 1.5, 1.2, 2.0, 0.8),
-                arguments(targetZScore, FilterResult.Success, null, null, 1.5, 1.2, 2.0, 0.8),
-                arguments(targetZScore, FilterResult.BidFails, 100000.0, null, 1.5, 1.2, 2.0, 0.8),
-                arguments(targetZScore, FilterResult.AskFails, null, 100000.0, 1.5, 1.2, 2.0, 0.8)
-                );
+                arguments(targetZScore, true, 1.0, 1.5, 2.0),
+                arguments(targetZScore, true, 1.0, 1.5, Double.NaN), // NaN case
+                arguments(targetZScore, false, 100000.0, 1.5, 2.0),
+                arguments(targetZScore, true, null, 1.5, 2.0)
+        );
     }
 }

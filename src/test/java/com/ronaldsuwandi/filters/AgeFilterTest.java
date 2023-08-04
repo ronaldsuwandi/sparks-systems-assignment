@@ -16,30 +16,21 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 class AgeFilterTest {
     @ParameterizedTest
     @MethodSource("filterArguments")
-    public void testFilter(long durationInMs, FilterResult expected, Instant bidTimestamp, Instant askTimestamp) {
+    public void testFilter(long durationInMs, boolean expected, Instant quoteTimestamp) {
         var filter = new AgeFilter(durationInMs);
-
-        var bid = bidTimestamp != null ? new Quote("EURUSD", "reuters", 1.5, QuoteType.BID, bidTimestamp.toEpochMilli()) : null;
-        var ask = askTimestamp != null ? new Quote("EURUSD", "reuters", 1.5, QuoteType.ASK, askTimestamp.toEpochMilli()) : null;
-
-        assertEquals(expected, filter.filter(bid, ask));
+        var bid = quoteTimestamp != null ? new Quote("EURUSD", "reuters", 1.5, QuoteType.BID, quoteTimestamp.toEpochMilli()) : null;
+        assertEquals(expected, filter.filter(bid));
     }
 
     static Stream<Arguments> filterArguments() {
         var durationInMs = Duration.ofHours(2).toMillis();
         var now = Instant.now();
         return Stream.of(
-                arguments(durationInMs, FilterResult.Success, now.minusSeconds(1000), now.minusSeconds(1000)),
-                arguments(durationInMs, FilterResult.Success, now.minusSeconds(3600), now.minusSeconds(3600)),
-                arguments(durationInMs, FilterResult.Success, now.plusSeconds(3600), now.plusSeconds(3600)), // future
-                arguments(durationInMs, FilterResult.BidFails, now.minusSeconds(90000), now.minusSeconds(1000)),
-                arguments(durationInMs, FilterResult.AskFails, now.minusSeconds(1000), now.minusSeconds(90000)),
-                arguments(durationInMs, FilterResult.BidAskFails, now.minusSeconds(90000), now.minusSeconds(90000)),
-                arguments(durationInMs, FilterResult.Success, null, null),
-                arguments(durationInMs, FilterResult.Success, now.minusSeconds(1000), null),
-                arguments(durationInMs, FilterResult.Success, null, now.minusSeconds(1000)),
-                arguments(durationInMs, FilterResult.AskFails, null, now.minusSeconds(90000)),
-                arguments(durationInMs, FilterResult.BidFails, now.minusSeconds(90000), null)
+                arguments(durationInMs, true, now.minusSeconds(1000)),
+                arguments(durationInMs, true, now.minusSeconds(3600)),
+                arguments(durationInMs, true, now.plusSeconds(3600)), // future
+                arguments(durationInMs, false, now.minusSeconds(90000)),
+                arguments(durationInMs, true, null)
         );
     }
 }

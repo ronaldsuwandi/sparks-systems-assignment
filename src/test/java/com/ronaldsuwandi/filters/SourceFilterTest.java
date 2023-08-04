@@ -14,25 +14,18 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 class SourceFilterTest {
     @ParameterizedTest
     @MethodSource("filterArguments")
-    public void testFilter(String source, FilterResult expected, String bidSource, String askSource) {
+    public void testFilter(String source, boolean expected, String bidSource) {
         var filter = new SourceFilter(source);
         var bid = bidSource != null ? new Quote("EURUSD", bidSource, 1.5, QuoteType.BID, 0) : null;
-        var ask = askSource != null ? new Quote("EURUSD", askSource, 1.5, QuoteType.ASK, 0) : null;
-        assertEquals(expected, filter.filter(bid, ask));
+        assertEquals(expected, filter.filter(bid));
     }
 
     static Stream<Arguments> filterArguments() {
         var source = "bloomberg";
         return Stream.of(
-                arguments(source, FilterResult.Success, source, source),
-                arguments(source, FilterResult.AskFails, source, "reuters"),
-                arguments(source, FilterResult.BidFails, "reuters", source),
-                arguments(source, FilterResult.BidAskFails, "reuters", "reuters"),
-                arguments(source, FilterResult.Success, source, null),
-                arguments(source, FilterResult.Success, null, source),
-                arguments(source, FilterResult.Success, null, null),
-                arguments(source, FilterResult.BidFails, "reuters", null),
-                arguments(source, FilterResult.AskFails, null, "reuters")
+                arguments(source, true, source),
+                arguments(source, false, "reuters"),
+                arguments(source, true, null)
         );
     }
 }

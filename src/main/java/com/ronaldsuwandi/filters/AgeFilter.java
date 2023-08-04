@@ -13,17 +13,9 @@ public class AgeFilter implements QuoteFilter {
     }
 
     @Override
-    public FilterResult filter(Quote bid, Quote ask) {
-        var bidFail = false;
-        var askFail = false;
+    public boolean filter(Quote quote) {
         var now = Instant.now().toEpochMilli();
-        if (bid != null && (now - bid.getTimestamp() >= durationInMillis)) {
-            bidFail = true;
-        }
-        if (ask != null && (now - ask.getTimestamp() >= durationInMillis)) {
-            askFail = true;
-        }
-        return FilterResultHelper.getFilterResult(bidFail, askFail);
+        return quote == null || (now - quote.getTimestamp() < durationInMillis);
     }
 
 }

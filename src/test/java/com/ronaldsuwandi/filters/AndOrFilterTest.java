@@ -13,63 +13,58 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 
 public class AndOrFilterTest {
-    private static final QuoteFilter success = (bid, ask) -> FilterResult.Success;
-    private static final QuoteFilter bidFails = (bid, ask) -> FilterResult.BidFails;
-    private static final QuoteFilter askFails = (bid, ask) -> FilterResult.AskFails;
-    private static final QuoteFilter bidAskFails = (bid, ask) -> FilterResult.BidAskFails;
+    private static final QuoteFilter success = (quote) -> true;
+    private static final QuoteFilter fail = (quote) -> false;
 
     private static final Quote bidMock = mock(Quote.class);
     private static final Quote askMock = mock(Quote.class);
 
     @ParameterizedTest
     @MethodSource("filterAndArguments")
-    public void testAndFilter(FilterResult expected, List<QuoteFilter> filters) {
+    public void testAndFilter(boolean expected, List<QuoteFilter> filters) {
         var filterBuilder = new AndFilter.Builder();
         AndFilter andFilter;
         for (var filter : filters) {
             filterBuilder.addFilter(filter);
         }
         andFilter = filterBuilder.build();
-        assertEquals(expected, andFilter.filter(bidMock, askMock));
+        assertEquals(expected, andFilter.filter(bidMock));
     }
 
     static Stream<Arguments> filterAndArguments() {
         return Stream.of(
-                arguments(FilterResult.Success, List.of(success, success, success)),
-                arguments(FilterResult.BidFails, List.of(success, success, bidFails)),
-                arguments(FilterResult.AskFails, List.of(success, askFails, bidFails)),
-                arguments(FilterResult.AskFails, List.of(success, askFails, success)),
-                arguments(FilterResult.BidAskFails, List.of(bidAskFails, success, success))
+                arguments(true, List.of(success, success, success)),
+                arguments(false, List.of(fail, success, success)),
+                arguments(false, List.of(fail, fail, success)),
+                arguments(false, List.of(fail, fail, fail))
         );
     }
 
     @ParameterizedTest
     @MethodSource("filterOrArguments")
-    public void testOrFilter(FilterResult expected, List<QuoteFilter> filters) {
+    public void testOrFilter(boolean expected, List<QuoteFilter> filters) {
         var filterBuilder = new OrFilter.Builder();
         OrFilter orFilter;
         for (var filter : filters) {
             filterBuilder.addFilter(filter);
         }
         orFilter = filterBuilder.build();
-        assertEquals(expected, orFilter.filter(bidMock, askMock));
+        assertEquals(expected, orFilter.filter(bidMock));
     }
 
     static Stream<Arguments> filterOrArguments() {
         return Stream.of(
-                arguments(FilterResult.Success, List.of(success, success, success)),
-                arguments(FilterResult.Success, List.of(bidFails, success, success)),
-                arguments(FilterResult.Success, List.of(bidFails, askFails, success)),
-                arguments(FilterResult.BidFails, List.of(bidFails, bidFails, bidFails)),
-                arguments(FilterResult.AskFails, List.of(askFails, askFails, askFails)),
-                arguments(FilterResult.BidAskFails, List.of(askFails, askFails, bidFails))
+                arguments(true, List.of(success, success, success)),
+                arguments(true, List.of(fail, success, success)),
+                arguments(true, List.of(fail, fail, success)),
+                arguments(false, List.of(fail, fail, fail))
         );
     }
 
 
     @ParameterizedTest
     @MethodSource("filterCombinedAndOrArguments")
-    public void testCombinedAndOrFilter(FilterResult expected, QuoteFilter firstAndFilter, List<QuoteFilter> orFilters) {
+    public void testCombinedAndOrFilter(boolean expected, QuoteFilter firstAndFilter, List<QuoteFilter> orFilters) {
         var orFilterBuilder = new OrFilter.Builder();
         OrFilter orFilter;
         for (var filter : orFilters) {
@@ -83,22 +78,18 @@ public class AndOrFilterTest {
                 .addFilter(orFilter)
                 .build();
 
-        assertEquals(expected, andFilter.filter(bidMock, askMock));
+        assertEquals(expected, andFilter.filter(bidMock));
     }
 
     static Stream<Arguments> filterCombinedAndOrArguments() {
         return Stream.of(
-                arguments(FilterResult.Success, success, List.of(success, success)),
-                arguments(FilterResult.Success, success, List.of(bidFails, success)),
-                arguments(FilterResult.Success, success, List.of(success, askFails)),
-                arguments(FilterResult.Success, success, List.of(bidFails, askFails, success)),
-                arguments(FilterResult.BidFails, success, List.of(bidFails, bidFails)),
-                arguments(FilterResult.BidFails, bidFails, List.of(success, success)),
-                arguments(FilterResult.AskFails, success, List.of(askFails, askFails)),
-                arguments(FilterResult.AskFails, askFails, List.of(success, success)),
-                arguments(FilterResult.AskFails, askFails, List.of(bidFails, bidFails)),
-                arguments(FilterResult.BidAskFails, bidAskFails, List.of(bidFails, bidFails)),
-                arguments(FilterResult.BidAskFails, success, List.of(bidFails, askFails))
+                arguments(true, success, List.of(success, success)),
+                arguments(true, success, List.of(fail, success)),
+                arguments(true, success, List.of(success, fail)),
+                arguments(false, success, List.of(fail, fail)),
+                arguments(false, fail, List.of(success, success)),
+                arguments(false, fail, List.of(success, fail)),
+                arguments(false, fail, List.of(fail, fail))
         );
     }
 }

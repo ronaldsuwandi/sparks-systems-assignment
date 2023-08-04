@@ -11,15 +11,7 @@ public class SymbolFilter implements QuoteFilter {
     }
 
     @Override
-    public FilterResult filter(Quote bid, Quote ask) {
-        var bidFail = false;
-        var askFail = false;
-        if (bid != null && !bid.getSymbol().equals(symbol)) {
-            bidFail = true;
-        }
-        if (ask != null && !ask.getSymbol().equals(symbol)) {
-            askFail = true;
-        }
-        return FilterResultHelper.getFilterResult(bidFail, askFail);
+    public boolean filter(Quote quote) {
+        return quote == null || quote.getSymbol().equals(symbol);
     }
 }

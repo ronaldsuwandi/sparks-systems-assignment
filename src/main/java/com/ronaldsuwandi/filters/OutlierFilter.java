@@ -17,34 +17,20 @@ public class OutlierFilter implements QuoteFilter {
     }
 
     @Override
-    public FilterResult filter(Quote bid, Quote ask) {
-        SymbolQuotes quotes = null;
-        if (bid != null) {
-            if (quotes == null) quotes = symbolQuotesMap.get(bid.getSymbol());
-        }
-        if (ask != null) {
-            if (quotes == null) quotes = symbolQuotesMap.get(ask.getSymbol());
+    public boolean filter(Quote quote) {
+        if (quote == null) {
+            return true;
         }
 
-        if (bid == null && ask == null) {
-            return FilterResult.Success;
-        }
+        var quotes = symbolQuotesMap.get(quote.getSymbol());
         if (quotes == null) {
             throw new RuntimeException("symbol not found");
         }
 
-        var bidFails = false;
-        var askFails = false;
-        if (bid != null) {
-            double zscore = (bid.getQuote() - quotes.getQuoteAverage(bid.getType())) / quotes.getQuoteStdDev(bid.getType());
-            if (!Double.isNaN(zscore)) bidFails = Math.abs(zscore) > targetZScore;
+        double zscore = (quote.getQuote() - quotes.getQuoteAverage(quote.getType())) / quotes.getQuoteStdDev(quote.getType());
+        if (Double.isNaN(zscore)) {
+            return true;
         }
-
-        if (ask != null) {
-            double zscore = (ask.getQuote() - quotes.getQuoteAverage(ask.getType())) / quotes.getQuoteStdDev(ask.getType());
-            if (!Double.isNaN(zscore)) askFails = Math.abs(zscore) > targetZScore;
-        }
-
-        return FilterResultHelper.getFilterResult(bidFails, askFails);
+        return Math.abs(zscore) <= targetZScore;
     }
 }

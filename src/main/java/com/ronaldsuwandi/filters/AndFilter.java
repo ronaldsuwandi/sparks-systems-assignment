@@ -13,15 +13,15 @@ public class AndFilter implements QuoteFilter {
     }
 
     @Override
-    public FilterResult filter(Quote bid, Quote ask) {
+    public boolean filter(Quote quote) {
         for (QuoteFilter qf : filters) {
-            FilterResult result = qf.filter(bid, ask);
-            if (result != FilterResult.Success) {
+            var result = qf.filter(quote);
+            if (!result) {
                 // for AND filter, we can take shortcut to first condition that fails
-                return result;
+                return false;
             }
         }
-        return FilterResult.Success;
+        return true;
     }
 
     public static class Builder {

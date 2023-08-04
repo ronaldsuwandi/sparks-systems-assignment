@@ -22,3 +22,6 @@ remaining
 - input handling + file handling
 - e2e test
 - diagrams 
+
+
+apache commons - to make file comparison code simpler + ignore carriage return type

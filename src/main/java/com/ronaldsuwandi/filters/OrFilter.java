@@ -13,29 +13,15 @@ public class OrFilter implements QuoteFilter {
     }
 
     @Override
-    public FilterResult filter(Quote bid, Quote ask) {
-        boolean bidFails = false;
-        boolean askFails = false;
-
+    public boolean filter(Quote quote) {
         for (QuoteFilter qf : filters) {
-            FilterResult result = qf.filter(bid, ask);
-            if (result == FilterResult.Success) {
+            var result = qf.filter(quote);
+            if (result) {
                 // shortcut if there's any success
-                return result;
-            } else {
-                switch(result) {
-                    case BidFails: bidFails = true; break;
-                    case AskFails: askFails = true; break;
-                    case BidAskFails: {
-                        bidFails = true;
-                        askFails = true;
-                        break;
-                    }
-                }
+                return true;
             }
         }
-
-        return FilterResultHelper.getFilterResult(bidFails, askFails);
+        return false;
     }
 
     public static class Builder {
