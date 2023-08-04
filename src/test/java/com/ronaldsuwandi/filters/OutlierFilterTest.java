@@ -22,20 +22,20 @@ class OutlierFilterTest {
                            Double bidQuote, Double askQuote,
                            double bidAverage, double askAverage,
                            double bidStdDev, double askStdDev) {
-        SymbolQuotes quotes = mock(SymbolQuotes.class);
+        var quotes = mock(SymbolQuotes.class);
         when(quotes.getQuoteAverage(QuoteType.BID)).thenReturn(bidAverage);
         when(quotes.getQuoteAverage(QuoteType.ASK)).thenReturn(askAverage);
         when(quotes.getQuoteStdDev(QuoteType.BID)).thenReturn(bidStdDev);
         when(quotes.getQuoteStdDev(QuoteType.ASK)).thenReturn(askStdDev);
 
-        OutlierFilter filter = new OutlierFilter(Map.of("EURUSD", quotes), targetZScore);
-        Quote bid = bidQuote != null ? new Quote("EURUSD", "reuters", bidQuote, QuoteType.BID, 0) : null;
-        Quote ask = askQuote != null ? new Quote("EURUSD", "reuters", askQuote, QuoteType.ASK, 0) : null;
+        var filter = new OutlierFilter(Map.of("EURUSD", quotes), targetZScore);
+        var bid = bidQuote != null ? new Quote("EURUSD", "reuters", bidQuote, QuoteType.BID, 0) : null;
+        var ask = askQuote != null ? new Quote("EURUSD", "reuters", askQuote, QuoteType.ASK, 0) : null;
         assertEquals(expected, filter.filter(bid, ask));
     }
 
     static Stream<Arguments> filterArguments() {
-        double targetZScore = 2.0;
+        var targetZScore = 2.0;
         return Stream.of(
                 arguments(targetZScore, FilterResult.Success, 1.0, 1.0, 1.5, 1.2, 2.0, 0.8),
                 arguments(targetZScore, FilterResult.Success, 1.0, 1.0, 1.5, 1.2, Double.NaN, Double.NaN), // NaN case

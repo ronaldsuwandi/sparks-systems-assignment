@@ -11,15 +11,28 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class TimestampFormatterTest {
     @ParameterizedTest
-    @MethodSource("filterArguments")
+    @MethodSource("formatterArguments")
     public void testFormatter(String expected, long timestamp) {
         assertEquals(expected, TimestampFormatter.format(timestamp));
     }
 
-    static Stream<Arguments> filterArguments() {
+    static Stream<Arguments> formatterArguments() {
         return Stream.of(
                 arguments("20230803144941050", 1691074181050L),
                 arguments("20221204073010123", 1670139010123L)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("toEpochMsArguments")
+    public void testToEpochMillis(long expected, String timestamp) {
+        assertEquals(expected, TimestampFormatter.toEpochMillis(timestamp));
+    }
+
+    static Stream<Arguments> toEpochMsArguments() {
+        return Stream.of(
+                arguments(1691074181050L, "20230803144941050"),
+                arguments(1670139010123L, "20221204073010123")
         );
     }
 }

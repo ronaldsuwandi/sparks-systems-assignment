@@ -33,8 +33,8 @@ public class OutlierFilter implements QuoteFilter {
             throw new RuntimeException("symbol not found");
         }
 
-        boolean bidFails = false;
-        boolean askFails = false;
+        var bidFails = false;
+        var askFails = false;
         if (bid != null) {
             double zscore = (bid.getQuote() - quotes.getQuoteAverage(bid.getType())) / quotes.getQuoteStdDev(bid.getType());
             if (!Double.isNaN(zscore)) bidFails = zscore > targetZScore;

@@ -15,14 +15,14 @@ class SourceFilterTest {
     @ParameterizedTest
     @MethodSource("filterArguments")
     public void testFilter(String source, FilterResult expected, String bidSource, String askSource) {
-        SourceFilter filter = new SourceFilter(source);
-        Quote bid = bidSource != null ? new Quote("EURUSD", bidSource, 1.5, QuoteType.BID, 0) : null;
-        Quote ask = askSource != null ? new Quote("EURUSD", askSource, 1.5, QuoteType.ASK, 0) : null;
+        var filter = new SourceFilter(source);
+        var bid = bidSource != null ? new Quote("EURUSD", bidSource, 1.5, QuoteType.BID, 0) : null;
+        var ask = askSource != null ? new Quote("EURUSD", askSource, 1.5, QuoteType.ASK, 0) : null;
         assertEquals(expected, filter.filter(bid, ask));
     }
 
     static Stream<Arguments> filterArguments() {
-        String source = "bloomberg";
+        var source = "bloomberg";
         return Stream.of(
                 arguments(source, FilterResult.Success, source, source),
                 arguments(source, FilterResult.AskFails, source, "reuters"),

@@ -17,17 +17,17 @@ class AgeFilterTest {
     @ParameterizedTest
     @MethodSource("filterArguments")
     public void testFilter(long durationInMs, FilterResult expected, Instant bidTimestamp, Instant askTimestamp) {
-        AgeFilter filter = new AgeFilter(durationInMs);
+        var filter = new AgeFilter(durationInMs);
 
-        Quote bid = bidTimestamp != null ? new Quote("EURUSD", "reuters", 1.5, QuoteType.BID, bidTimestamp.toEpochMilli()) : null;
-        Quote ask = askTimestamp != null ? new Quote("EURUSD", "reuters", 1.5, QuoteType.ASK, askTimestamp.toEpochMilli()) : null;
+        var bid = bidTimestamp != null ? new Quote("EURUSD", "reuters", 1.5, QuoteType.BID, bidTimestamp.toEpochMilli()) : null;
+        var ask = askTimestamp != null ? new Quote("EURUSD", "reuters", 1.5, QuoteType.ASK, askTimestamp.toEpochMilli()) : null;
 
         assertEquals(expected, filter.filter(bid, ask));
     }
 
     static Stream<Arguments> filterArguments() {
-        long durationInMs = Duration.ofHours(2).toMillis();
-        Instant now = Instant.now();
+        var durationInMs = Duration.ofHours(2).toMillis();
+        var now = Instant.now();
         return Stream.of(
                 arguments(durationInMs, FilterResult.Success, now.minusSeconds(1000), now.minusSeconds(1000)),
                 arguments(durationInMs, FilterResult.Success, now.minusSeconds(3600), now.minusSeconds(3600)),

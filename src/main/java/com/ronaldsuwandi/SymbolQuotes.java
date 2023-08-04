@@ -60,8 +60,8 @@ public class SymbolQuotes {
 
     public double getQuoteStdDev(QuoteType quoteType) {
         // reference for online variance: https://math.stackexchange.com/a/1769248
-        double sum;
-        double count;
+        var sum = 0d;
+        var count = 0d;
         if (quoteType == QuoteType.BID) {
             sum = bidSumDifferenceFromMean;
             count = bids.size();

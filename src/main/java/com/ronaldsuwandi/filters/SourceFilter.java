@@ -12,8 +12,8 @@ public class SourceFilter implements QuoteFilter {
 
     @Override
     public FilterResult filter(Quote bid, Quote ask) {
-        boolean bidFail = false;
-        boolean askFail = false;
+        var bidFail = false;
+        var askFail = false;
         if (bid != null && !bid.getSource().equals(source)) {
             bidFail = true;
         }

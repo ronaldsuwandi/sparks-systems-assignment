@@ -15,14 +15,14 @@ public class SymbolFilterTest {
     @ParameterizedTest
     @MethodSource("filterArguments")
     public void testFilter(String symbol, FilterResult expected, String bidSymbol, String askSymbol) {
-        SymbolFilter filter = new SymbolFilter(symbol);
-        Quote bid = bidSymbol != null ? new Quote(bidSymbol, "reuters", 1.5, QuoteType.BID, 0) : null;
-        Quote ask = askSymbol != null ? new Quote(askSymbol, "reuters", 1.5, QuoteType.ASK, 0) : null;
+        var filter = new SymbolFilter(symbol);
+        var bid = bidSymbol != null ? new Quote(bidSymbol, "reuters", 1.5, QuoteType.BID, 0) : null;
+        var ask = askSymbol != null ? new Quote(askSymbol, "reuters", 1.5, QuoteType.ASK, 0) : null;
         assertEquals(expected, filter.filter(bid, ask));
     }
 
     static Stream<Arguments> filterArguments() {
-        String symbol = "EURUSD";
+        var symbol = "EURUSD";
         return Stream.of(
                 arguments(symbol, FilterResult.Success, symbol, symbol),
                 arguments(symbol, FilterResult.AskFails, symbol, "AUDUSD"),

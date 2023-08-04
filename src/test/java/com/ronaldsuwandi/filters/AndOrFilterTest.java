@@ -24,8 +24,13 @@ public class AndOrFilterTest {
     @ParameterizedTest
     @MethodSource("filterAndArguments")
     public void testAndFilter(FilterResult expected, List<QuoteFilter> filters) {
-            AndFilter filter = new AndFilter(filters);
-            assertEquals(expected, filter.filter(bidMock, askMock));
+        var filterBuilder = new AndFilter.Builder();
+        AndFilter andFilter;
+        for (var filter : filters) {
+            filterBuilder.addFilter(filter);
+        }
+        andFilter = filterBuilder.build();
+        assertEquals(expected, andFilter.filter(bidMock, askMock));
     }
 
     static Stream<Arguments> filterAndArguments() {
@@ -41,8 +46,13 @@ public class AndOrFilterTest {
     @ParameterizedTest
     @MethodSource("filterOrArguments")
     public void testOrFilter(FilterResult expected, List<QuoteFilter> filters) {
-        OrFilter filter = new OrFilter(filters);
-        assertEquals(expected, filter.filter(bidMock, askMock));
+        var filterBuilder = new OrFilter.Builder();
+        OrFilter orFilter;
+        for (var filter : filters) {
+            filterBuilder.addFilter(filter);
+        }
+        orFilter = filterBuilder.build();
+        assertEquals(expected, orFilter.filter(bidMock, askMock));
     }
 
     static Stream<Arguments> filterOrArguments() {
@@ -53,6 +63,42 @@ public class AndOrFilterTest {
                 arguments(FilterResult.BidFails, List.of(bidFails, bidFails, bidFails)),
                 arguments(FilterResult.AskFails, List.of(askFails, askFails, askFails)),
                 arguments(FilterResult.BidAskFails, List.of(askFails, askFails, bidFails))
+        );
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("filterCombinedAndOrArguments")
+    public void testCombinedAndOrFilter(FilterResult expected, QuoteFilter firstAndFilter, List<QuoteFilter> orFilters) {
+        var orFilterBuilder = new OrFilter.Builder();
+        OrFilter orFilter;
+        for (var filter : orFilters) {
+            orFilterBuilder.addFilter(filter);
+        }
+        orFilter = orFilterBuilder.build();
+
+        var andFilterBuilder = new AndFilter.Builder();
+        AndFilter andFilter;
+        andFilter = andFilterBuilder.addFilter(firstAndFilter)
+                .addFilter(orFilter)
+                .build();
+
+        assertEquals(expected, andFilter.filter(bidMock, askMock));
+    }
+
+    static Stream<Arguments> filterCombinedAndOrArguments() {
+        return Stream.of(
+                arguments(FilterResult.Success, success, List.of(success, success)),
+                arguments(FilterResult.Success, success, List.of(bidFails, success)),
+                arguments(FilterResult.Success, success, List.of(success, askFails)),
+                arguments(FilterResult.Success, success, List.of(bidFails, askFails, success)),
+                arguments(FilterResult.BidFails, success, List.of(bidFails, bidFails)),
+                arguments(FilterResult.BidFails, bidFails, List.of(success, success)),
+                arguments(FilterResult.AskFails, success, List.of(askFails, askFails)),
+                arguments(FilterResult.AskFails, askFails, List.of(success, success)),
+                arguments(FilterResult.AskFails, askFails, List.of(bidFails, bidFails)),
+                arguments(FilterResult.BidAskFails, bidAskFails, List.of(bidFails, bidFails)),
+                arguments(FilterResult.BidAskFails, success, List.of(bidFails, askFails))
         );
     }
 }

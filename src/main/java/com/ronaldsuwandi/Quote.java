@@ -54,4 +54,15 @@ public class Quote implements Comparable<Quote>{
     public int hashCode() {
         return Objects.hash(symbol, source, quote, type, timestamp);
     }
+
+    @Override
+    public String toString() {
+        return "Quote{" +
+                "symbol='" + symbol + '\'' +
+                ", source='" + source + '\'' +
+                ", quote=" + quote +
+                ", type=" + type +
+                ", timestamp=" + timestamp +
+                '}';
+    }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 public class AndFilter implements QuoteFilter {
     List<QuoteFilter> filters;
 
-    AndFilter(List<QuoteFilter> filters) {
+    private AndFilter(List<QuoteFilter> filters) {
         this.filters = filters;
     }
 
@@ -24,10 +24,10 @@ public class AndFilter implements QuoteFilter {
         return FilterResult.Success;
     }
 
-    public static class AndFilterBuilder {
+    public static class Builder {
         List<QuoteFilter> filters = new ArrayList<>();
 
-        public AndFilterBuilder addFilter(QuoteFilter filter) {
+        public Builder addFilter(QuoteFilter filter) {
             if (filter != null) filters.add(filter);
             return this;
         }

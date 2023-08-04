@@ -8,7 +8,7 @@ import java.util.List;
 public class OrFilter implements QuoteFilter {
     List<QuoteFilter> filters;
 
-    OrFilter(List<QuoteFilter> filters) {
+    private OrFilter(List<QuoteFilter> filters) {
         this.filters = filters;
     }
 
@@ -38,10 +38,10 @@ public class OrFilter implements QuoteFilter {
         return FilterResultHelper.getFilterResult(bidFails, askFails);
     }
 
-    public static class OrFilterBuilder {
+    public static class Builder {
         List<QuoteFilter> filters = new ArrayList<>();
 
-        public OrFilterBuilder addFilter(QuoteFilter filter) {
+        public Builder addFilter(QuoteFilter filter) {
             if (filter != null) filters.add(filter);
             return this;
         }
