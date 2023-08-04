@@ -15,7 +15,7 @@ public class AgeFilter implements QuoteFilter {
     @Override
     public boolean filter(Quote quote) {
         var now = Instant.now().toEpochMilli();
-        return quote == null || (now - quote.getTimestamp() < durationInMillis);
+        return quote != null && (now - quote.getTimestamp() < durationInMillis);
     }
 
 }

@@ -12,6 +12,6 @@ public class SymbolFilter implements QuoteFilter {
 
     @Override
     public boolean filter(Quote quote) {
-        return quote == null || quote.getSymbol().equals(symbol);
+        return quote != null && quote.getSymbol().equals(symbol);
     }
 }

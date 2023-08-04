@@ -19,7 +19,7 @@ public class OutlierFilter implements QuoteFilter {
     @Override
     public boolean filter(Quote quote) {
         if (quote == null) {
-            return true;
+            return false;
         }
 
         var quotes = symbolQuotesMap.get(quote.getSymbol());

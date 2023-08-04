@@ -35,7 +35,7 @@ class OutlierFilterTest {
                 arguments(targetZScore, true, 1.0, 1.5, 2.0),
                 arguments(targetZScore, true, 1.0, 1.5, Double.NaN), // NaN case
                 arguments(targetZScore, false, 100000.0, 1.5, 2.0),
-                arguments(targetZScore, true, null, 1.5, 2.0)
+                arguments(targetZScore, false, null, 1.5, 2.0)
         );
     }
 }

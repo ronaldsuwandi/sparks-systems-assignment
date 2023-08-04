@@ -31,3 +31,10 @@ initially filter is for filter(bid,ask) but doesn't make sense - found issue whe
   further complicate things and also make the logic fails (e.g. when using source filter in OR condition for 
   bloomberg+saxo -> if the best match is actually bloomberg+saxo, usign filter for both bid and ask at the same time yields
   false which is wrong)
+
+
+updated filter hnadling for null quote (used to be true, should be false)
+
+
+assume
+- having bid without ask is ok in the output (and vice-versa)

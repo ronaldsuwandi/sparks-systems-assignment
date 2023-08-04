@@ -30,7 +30,7 @@ class AgeFilterTest {
                 arguments(durationInMs, true, now.minusSeconds(3600)),
                 arguments(durationInMs, true, now.plusSeconds(3600)), // future
                 arguments(durationInMs, false, now.minusSeconds(90000)),
-                arguments(durationInMs, true, null)
+                arguments(durationInMs, false, null)
         );
     }
 }

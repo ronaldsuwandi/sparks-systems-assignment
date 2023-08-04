@@ -25,7 +25,7 @@ class SourceFilterTest {
         return Stream.of(
                 arguments(source, true, source),
                 arguments(source, false, "reuters"),
-                arguments(source, true, null)
+                arguments(source, false, null)
         );
     }
 }

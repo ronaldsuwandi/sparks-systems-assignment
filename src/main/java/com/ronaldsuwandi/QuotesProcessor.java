@@ -56,65 +56,19 @@ public class QuotesProcessor {
                     } else {
                         if (!bidResult) {
                             bid = null;
+                            if (!bidIterator.hasNext()) {
+                                // no more bid left, we skip the rest since we need a pair for output
+                                break;
+                            }
                         } else {
                             ask = null;
-                        }
-                        // FIXME check if this is the last row
-                        if (!bidIterator.hasNext() && !askIterator.hasNext()) {
-                            try {
-                                output.write(symbol, bid, ask);
-                            } catch (IOException e) {
-                                throw new RuntimeException("error writing output", e);
+                            if (!askIterator.hasNext()) {
+                                // no more ask left, we skip the rest since we need a pair for output
+                                break;
                             }
                         }
                     }
                 }
-
-
-//                switch (result) {
-//                    case AskFails:
-//                        ask = null;
-//                        // if last entry, just print out
-//                        // FIXME check if ok
-//                        if (!bidIterator.hasNext() && !askIterator.hasNext()) {
-//                            try {
-//                                output.write(symbol, bid, ask);
-//                            } catch (IOException e) {
-//                                throw new RuntimeException("error writing output", e);
-//                            }
-//                        }
-//                        break;
-//                    case BidFails:
-//                        bid = null;
-//                        // if last entry, just print out
-//                        // FIXME check if ok
-//                        if (!bidIterator.hasNext() && !askIterator.hasNext()) {
-//                            try {
-//                                output.write(symbol, bid, ask);
-//                            } catch (IOException e) {
-//                                throw new RuntimeException("error writing output", e);
-//                            }
-//                        }
-//
-//                        break;
-//
-//                    case BidAskFails:
-//                        bid = null;
-//                        ask = null;
-//                        break;
-//
-//                    case Success: {
-//                        try {
-//                            output.write(symbol, bid, ask);
-//                        } catch (IOException e) {
-//                            throw new RuntimeException("error writing output", e);
-//                        }
-//                        bid = null;
-//                        ask = null;
-//                        break;
-//                    }
-//                }
-
             }
         }
 

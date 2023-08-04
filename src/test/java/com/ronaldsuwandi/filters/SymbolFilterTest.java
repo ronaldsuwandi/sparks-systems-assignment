@@ -25,7 +25,7 @@ public class SymbolFilterTest {
         return Stream.of(
                 arguments(symbol, true, symbol),
                 arguments(symbol, false, "AUDUSD"),
-                arguments(symbol, true, null)
+                arguments(symbol, false, null)
         );
     }
 }

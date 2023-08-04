@@ -12,6 +12,6 @@ public class SourceFilter implements QuoteFilter {
 
     @Override
     public boolean filter(Quote quote) {
-        return quote == null || quote.getSource().equals(source);
+        return quote != null && quote.getSource().equals(source);
     }
 }
