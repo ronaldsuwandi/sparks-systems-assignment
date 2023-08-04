@@ -23,20 +23,25 @@ public class MainTest {
         if (inputStream == null) {
             return;
         }
-        QuoteInput input = new CSVQuoteInput(new BufferedReader(new InputStreamReader(inputStream)));
-        var map = input.read();
         var writer = new StringWriter();
-        QuoteOutput output = new CSVQuoteOutput(writer);
 
-        QuotesProcessor processor = new QuotesProcessor(output);
-        var filter = new AndFilter.Builder()
-                .addFilter(new SourceFilter("bloomberg"))
-                .addFilter(new SymbolFilter("EURUSD"))
-                .build();
-        processor.setFilter(filter);
-        processor.process(map);
+        try (
+                QuoteInput input = new CSVQuoteInput(new BufferedReader(new InputStreamReader(inputStream)));
+                QuoteOutput output = new CSVQuoteOutput(writer)
+        ) {
+            var map = input.read();
 
-        System.out.println(writer.toString());
+            QuotesProcessor processor = new QuotesProcessor(output);
+            var filter = new AndFilter.Builder()
+                    .addFilter(new SourceFilter("bloomberg"))
+                    .addFilter(new SymbolFilter("EURUSD"))
+                    .build();
+            processor.setFilter(filter);
+            processor.process(map);
+            output.flush();
+
+            System.out.println(writer);
+        }
 
     }
 }
