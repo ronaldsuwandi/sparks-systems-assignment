@@ -25,3 +25,9 @@ remaining
 
 
 apache commons - to make file comparison code simpler + ignore carriage return type
+
+initially filter is for filter(bid,ask) but doesn't make sense - found issue when testing or condition
+- initial thought was there may be some more complex filter that requires both bid and ask - but in the end this
+  further complicate things and also make the logic fails (e.g. when using source filter in OR condition for 
+  bloomberg+saxo -> if the best match is actually bloomberg+saxo, usign filter for both bid and ask at the same time yields
+  false which is wrong)
