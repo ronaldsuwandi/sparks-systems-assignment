@@ -33,7 +33,8 @@ public class CSVQuoteOutputTest {
         for (var i = 0; i < symbols.size(); i++) {
             csvQuoteOutput.write(symbols.get(i), bids.get(i), asks.get(i));
         }
-        var expected = "USDSGD,reuters,20230803000000000,1.3,bloomberg,20230803000000010,1.461\r\n" +
+        var expected = "symbol,bidSource,bidTimestamp,bidPrice,askSource,askTimestamp,askPrice\r\n" +
+                "USDSGD,reuters,20230803000000000,1.3,bloomberg,20230803000000010,1.461\r\n" +
                 "SGDAUD,bloomberg,20230803000000000,1.11,bloomberg,20230803000000010,1.115\r\n" +
                 "USDSGD,reuters,20230803000000000,1.31,reuters,20230803000000010,1.45";
         Assertions.assertEquals(expected, writer.toString().trim());

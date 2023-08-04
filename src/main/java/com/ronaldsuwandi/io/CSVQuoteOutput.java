@@ -14,7 +14,10 @@ public class CSVQuoteOutput implements QuoteOutput {
     private final CSVPrinter csvPrinter;
 
     public CSVQuoteOutput(Writer writer) throws IOException {
-        this.csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        var csvFormat = CSVFormat.Builder.create()
+                .setHeader("symbol", "bidSource", "bidTimestamp", "bidPrice", "askSource", "askTimestamp", "askPrice")
+                .build();
+        this.csvPrinter = new CSVPrinter(writer, csvFormat);
     }
 
     @Override

@@ -2,13 +2,15 @@ package com.ronaldsuwandi;
 
 import com.ronaldsuwandi.filters.FilterResult;
 import com.ronaldsuwandi.filters.QuoteFilter;
+import com.ronaldsuwandi.io.QuoteOutput;
 
+import java.io.IOException;
 import java.util.Map;
 
 public class QuotesProcessor {
-    private final String output; // TODO
+    private final QuoteOutput output;
 
-    public QuotesProcessor(String output) {
+    public QuotesProcessor(QuoteOutput output) {
         this.output = output;
     }
 
@@ -20,7 +22,9 @@ public class QuotesProcessor {
 
     public void process(Map<String, SymbolQuotes> symbolQuotesMap) {
 
-        for (SymbolQuotes symbolQuotes : symbolQuotesMap.values()) {
+        for (var entry : symbolQuotesMap.entrySet()) {
+            var symbol = entry.getKey();
+            var symbolQuotes = entry.getValue();
             var bidIterator = symbolQuotes.iterator(QuoteType.BID);
             var askIterator = symbolQuotes.iterator(QuoteType.ASK);
 
@@ -35,7 +39,7 @@ public class QuotesProcessor {
                     ask = askIterator.next();
                 }
 
-                var result = filter.filter(bid, ask);
+                var result = filter == null ? FilterResult.Success : filter.filter(bid, ask);
 
                 switch (result) {
                     case AskFails:
@@ -46,76 +50,25 @@ public class QuotesProcessor {
                         break;
 
                     case BidAskFails:
+                        bid = null;
+                        ask = null;
+                        break;
+
                     case Success: {
+                        try {
+                            output.write(symbol, bid, ask);
+                        } catch (IOException e) {
+                            throw new RuntimeException("error writing output", e);
+                        }
                         bid = null;
                         ask = null;
                         break;
                     }
                 }
 
-                if (result == FilterResult.Success) {
-                    // do output
-                }
             }
         }
 
 
     }
 }
-
-        /*
-
-        // for each symbol
-        bidIterator = bids.iterator
-        askIterator = asks.iterator
-
-        bid = null
-        ask = null
-
-        while (bid.hasnext and ask.hasnext) {
-
-            if (bid == null && bid.hasnext) {
-                bid = bid.next
-            }
-            if (ask == null && ask.hasnext) {
-                ask = ask.next
-            }
-
-            for (filter f : filters) {
-                filterresult fr = f.filter(bid, ask)
-                if (fr.success){
-                    // success for both
-                } else {
-                    if fr.bidFails {
-                        bid = null
-                    }
-
-                    if fr.askFails {
-                        ask = null
-                    }
-                    continue
-                }
-
-            }
-
-            // success for both
-            bid = null
-            ask = null
-            output(bid, ask)
-
-        }
-
-        ----
-
-        public filterresult filter(bid, ask)
-
-
-        filterresult {
-            success: bool
-            bidFail: bid
-            fail
-
-        ---
-
-
-         */
