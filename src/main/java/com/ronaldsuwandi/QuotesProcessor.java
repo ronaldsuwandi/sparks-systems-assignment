@@ -44,9 +44,28 @@ public class QuotesProcessor {
                 switch (result) {
                     case AskFails:
                         ask = null;
+                        // if last entry, just print out
+                        // FIXME check if ok
+                        if (!bidIterator.hasNext() && !askIterator.hasNext()) {
+                            try {
+                                output.write(symbol, bid, ask);
+                            } catch (IOException e) {
+                                throw new RuntimeException("error writing output", e);
+                            }
+                        }
                         break;
                     case BidFails:
                         bid = null;
+                        // if last entry, just print out
+                        // FIXME check if ok
+                        if (!bidIterator.hasNext() && !askIterator.hasNext()) {
+                            try {
+                                output.write(symbol, bid, ask);
+                            } catch (IOException e) {
+                                throw new RuntimeException("error writing output", e);
+                            }
+                        }
+
                         break;
 
                     case BidAskFails:
