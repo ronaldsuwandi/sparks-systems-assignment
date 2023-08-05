@@ -1,40 +1,50 @@
+## Requirements
+- jdk 11
+- gradle 8.0
 
-future improvements
-- streaming operation
-- special treatment for symbol source  ?
+## Run application
 
+Run all tests 
 
-Important assumption
-- data is kept in memory. Assuming it’s a backend and multiple client sending filter
-- So can’t simply discard data - therefore single pass won’t do
+```
+./gradlew clean test
+```
 
+Run e2e test to generate `output.csv`
 
-TODO
-- limit as post-filter approach (e.g. limit only first X result or limit only top X items per symbol)
-- for z score / outlier - post input (e.g. calculate average and )
-    - this could be part of the input processing -> calculate running average and stddev per symbol
+```
+./gradlew clean test --tests MainTest.testE2E 
+```
 
-outlier - uses online outlier algorithm (keeping track of mean+sum difference from mean) for efficiency 
-and this can be adapted for streaming approach if needed (using windowing approach)
+## Architecture
+![high level flow](high-level-flow.svg)
 
+## Flowchart
+![flow chart](flowchart.svg)
 
-remaining
-- input handling + file handling
-- e2e test
-- diagrams 
+## Assumptions
+- Application is a backend that can serve multiple clients with multiple filters. Hence data must be kept in memory and 
+  not simply discarded (ie. single pass filtering won't do)
+- Output row must always have both bid and ask quote. If we only have either one of them because it got filtered out, 
+  then it is discarded from the output because it doesn't make sense to have either bid or ask without the counterpart
 
+## Notes, decisions & reasoning 
+- Uses single filter in the `QuotesProcessor` to make it simpler. This way you can be explicit on the root filter 
+  whether it's an OR or AND filter which then can be chained
+- Use Apache Commons for CSV handling as well as IOUtils. IOUtils is only used for testing to do comparison 
+  between files. It has nice compare method that ignores EOL character
+- Once input is processed, a `Map<Symbol, SymbolQuotes>` is created. This essentially group the result based on symbol
+- `SymbolQuotes` contains 2 sorted set of quotes for both bids and asks. `Quote` is sorted ascendingly based on the 
+  price, whenever we pick the first item on both bid and ask will always give the smallest amount
+- Outlier filter uses standard Z Score for outlier detection. Simply using average can be problematic if 
+  there is a consistent increasing/decreasing trend (especially if the trend is percentage is big) 
+- Average and Standard Deviation is stored ine memory as part of `SymbolQuotes`. This way we can store the value as 
+  quote is added to the object and avoid having to run through all the items everytime we want to get the average or 
+  standard deviation
+- Average and sum difference from mean is calculated on the fly using online function. This way if we move on to 
+  streaming instead of loading the full file in memory, the logic will still work
 
-apache commons - to make file comparison code simpler + ignore carriage return type
-
-initially filter is for filter(bid,ask) but doesn't make sense - found issue when testing or condition
-- initial thought was there may be some more complex filter that requires both bid and ask - but in the end this
-  further complicate things and also make the logic fails (e.g. when using source filter in OR condition for 
-  bloomberg+saxo -> if the best match is actually bloomberg+saxo, usign filter for both bid and ask at the same time yields
-  false which is wrong)
-
-
-updated filter hnadling for null quote (used to be true, should be false)
-
-
-assume
-- having bid without ask is ok in the output (and vice-versa)
+## Potential future works
+- Streaming operations
+- Special treatment for Symbol Filter
+- Introduce limit as post-filter (e.g. limit only first X result or limit only first X result per symbol)
